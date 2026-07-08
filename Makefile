@@ -1,6 +1,9 @@
 # Rules that should run regardless of files state
 all: build
 
+# Get the directory where this Makefile is located (works even when called from subdirectories)
+MAKEFILE_DIR := $(dir $(realpath $(firstword $(MAKEFILE_LIST))))
+
 # Environment Variables
 BUILD_DIR ?= build/  ## Directory for build files (pdf, artifacts)
 LATEX_FILE ?= resume.tex  ## Main LaTeX file
@@ -17,6 +20,9 @@ INSTALL_DIR := $(TEXMFHOME)/tex/luatex/local
 # -quiet suppresses logs
 
 BUILD_OPTIONS := -pdf -quiet -lualatex -jobname=resume -outdir=$(BUILD_DIR)
+
+# Set OSFONTDIR to include fonts directory so lualatex can find them
+export OSFONTDIR := $(MAKEFILE_DIR)fonts
 
 # ------------------------------------------------------------------------------
 # Targets
@@ -38,7 +44,8 @@ clean:  ## Cleans up build files
 .PHONY: install
 install:  ## Copies .cls to `TEXMFHOME`
 	@mkdir -p $(INSTALL_DIR)
-	cp resume.cls $(INSTALL_DIR)/resume.cls
+	cp $(MAKEFILE_DIR)resume.cls $(INSTALL_DIR)/resume.cls
+# 	cp resume.cls $(INSTALL_DIR)/resume.cls
 
 # ------------------------------------------------------------------------------
 # Help - Documentation
